@@ -132,7 +132,6 @@
 		Bundle 'OmniCppComplete'
 		Bundle 'Lokaltog/vim-powerline'
 		Bundle 'repeat.vim'
-		Bundle 'msanders/snipmate.vim'
 		Bundle 'wesleyche/SrcExpl'
 		Bundle 'std_c.zip'
 		Bundle 'SuperTab'
@@ -143,6 +142,12 @@
 		Bundle 'TxtBrowser'
 		Bundle 'ZoomWin'
 		Bundle 'Gundo'
+		Bundle 'jsbeautify'
+		Bundle 'AuthorInfo'
+		" Bundle 'msanders/snipmate.vim'
+		Bundle 'UltiSnips'
+		Plugin 'honza/vim-snippets' "代码快集合
+		Bundle 'rizzatti/dash.vim'
 		"Bundle 'vim-javacompleteex'               "更好的 Java 补全插件
 		"Bundle 'Mark--Karkat'
 		" Bundle 'ervandew/supertab'                "有时与 snipmate 插件冲突
@@ -233,17 +238,18 @@
 		set laststatus=2                                      "启用状态栏信息
 		set cmdheight=2                                       "设置命令行的高度为2，默认为1
 		set cursorline                                        "突出显示当前行
+		" set guifont=Hack\ Regular
 		" set guifont=YaHei_Consolas_Hybrid:h10                 "设置字体:字号（字体名称空格用下划线代替）
 		"set nowrap                                            "设置不自动换行
 		"set shortmess=atI                                     "去掉欢迎界面
 		set statusline=%n:%{HasPaste()}%F%m%r%h\ %w\ \(%l\,%c\)\ ascii:%b\ hex:%B\ %P   "设置状态栏信息
 		" 设置 gVim 窗口初始位置及大小
 		if g:isGUI
-			au GUIEnter * simalt ~x                           "窗口启动时自动最大化
-			winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
-			set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
+			" au GUIEnter * simalt ~x                           "窗口启动时自动最大化
+			" winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
+			" set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
 			" 设置代码配色方案
-			set background=light
+			set background=dark
 			colorscheme Solarized "Gvim配色方案
 			else
 			set background=dark
@@ -548,7 +554,7 @@ map! <S-Insert> <MiddleMouse>
 	endtry
 
 	" Return to last edit position when opening files (You want this!)
-	autocmd BufReadPost *
+	" autocmd BufReadPost *
 	\ if line("'\"") > 0 && line("'\"") <= line("$") |
 	\   exe "normal! g`\"" |
 	\ endif
@@ -696,3 +702,15 @@ map! <S-Insert> <MiddleMouse>
 		   endif
 		endfunction
 inoremap jk <ESC>
+
+"====================AuthorInfo插件配置====================
+"====================进行版权声明的设置====================
+"添加或更新头
+let g:vimrc_author='yclimw'
+let g:vimrc_email='limw@newlandpayment.com'
+" let g:vimrc_homepage='www.yclimw.com'
+
+nmap <F8> :AuthorInfoDetect<cr>
+"================================================================================
+nmap <silent> <F9> :Dash<cr>
+nmap <silent> <F10> :Dash!<cr>

@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_1='/Users/yclimw/Documents/NewlandPaymentSync/workspace'
+let g:netrw_dirhist_2='/private/var/log/ppp'
+let g:netrw_dirhist_3='/Users/yclimw/.vimperator'
+let g:netrw_dirhist_4='/Users/yclimw/Documents/NewlandPaymentSync'
+let g:netrw_dirhist_5='/Users/yclimw/Documents/NewlandPaymentSync/workspace/classes/src'
