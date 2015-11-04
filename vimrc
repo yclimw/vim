@@ -109,7 +109,8 @@
 		set rtp+=~/.vim/bundle/vundle/
 		call vundle#rc()
 	else
-		set rtp+=$VIM/vimfiles/bundle/vundle/
+		" set rtp+=$VIM/vimfiles/bundle/vundle/
+		set rtp+=~/.vim/bundle/vundle/
 		call vundle#rc('$VIM/vimfiles/bundle/')
 	endif
 
@@ -246,14 +247,11 @@
 		" 设置 gVim 窗口初始位置及大小
 		if g:isGUI
 			" au GUIEnter * simalt ~x                           "窗口启动时自动最大化
-			" winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
-			" set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
+			winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
+			set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
 			" 设置代码配色方案
 			set background=dark
 			colorscheme Solarized "Gvim配色方案
-			else
-			set background=dark
-			colorscheme Solarized "终端配色方案
 			" 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 			set guioptions-=m
 			set guioptions-=T
@@ -270,6 +268,9 @@
 				\set guioptions+=r <Bar>
 				\set guioptions+=L <Bar>
 			\endif<CR>
+		else
+			set background=dark
+			colorscheme Solarized "终端配色方案
 		endif
 
 	"  < 其它配置 >
@@ -448,7 +449,7 @@
 
 	" < Gundo 插件配置 >
 	"To Toggle the Gundo Windows
-	map <leader>u :GundoToggle<CR>
+	nmap <silent><F12> :GundoToggle<CR>
 
 
 
@@ -714,3 +715,5 @@ nmap <F8> :AuthorInfoDetect<cr>
 "================================================================================
 nmap <silent> <F9> :Dash<cr>
 nmap <silent> <F10> :Dash!<cr>
+
+let g:solarized_italic=0
