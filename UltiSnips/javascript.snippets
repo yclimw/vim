@@ -1,4 +1,4 @@
-snippet grd.add "grd subtable values" !b
+snippet poba.grd "grd subtable values" !b
 var rs = "grd${1:subtablename}.addRow(rowNum," + "'" + 
 		${2:param}+ "," + 
 		${3:param}+ "," + 
@@ -9,6 +9,135 @@ var rs = "grd${1:subtablename}.addRow(rowNum," + "'" +
 		"',rowNum);\r\n";
 endsnippet
 
-snippet sysout "out put system log" !b
+snippet poba.out "out put system log" !b
 out.println("${1:info}");
+endsnippet
+
+snippet poba.系统邮件签名 "get System Admin Email Sign"
+/**
+ * 系统邮件签名信息
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @author yclimw
+ */
+function getAdminMailSign() {
+	var sign = "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;此邮件为业务架构平台系统自动发送，请勿回复。<br />-----------------------------------<br />福建新大陆支付技术有限公司 供应商协同平台";
+	return sign;
+}
+endsnippet
+
+snippet poba.getMailReceiversByRole "通过OA系统中的角色编号获取该角色下所有用户的邮件地址"
+/**
+ * 通过角色号获取该角色下所有用户的邮件地址
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @author yclimw
+ * @param 角色编号
+ * @return String 收件人邮件列表，数据格式：邮件1,邮件2,……
+ */
+function getMailReceiversByRole(roleCode) {
+	var login = new Login();
+	var mailReceivers = "";
+	var users = OuClient.getUsersByRole("root", roleCode); //根据角色号获取角色下所有人员信息
+	if (users != null && users.length > 0) {
+		for (var i = 0; i < users.length; i++) {
+			var usercode = users[i].getCode();
+			var list = appBo.query("SELECT EMAIL FROM OU_USER WHERE CODE='" + usercode + "'");
+			if (list != null && list.size() > 0) {
+				var email = list.get(0).get("EMAIL");
+				if (email != null && email != "") {
+					mailReceivers = mailReceivers + email + ",";
+				}
+			}
+		}
+	}
+	return mailReceivers;
+}
+endsnippet
+
+snippet poba.getReceiverEmails "get Mail Receivers Address By TaskId"
+/*
+ * 通过任务编号获取收件人列表
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @author yclimw
+ * @param taskid OA配置表里面配置的任务编号
+ * @return String 收件人邮件列表，数据格式：邮件1,邮件2,邮件3，……
+ */
+function getReceiverEmails(taskid) {
+	var sql = "SELECT DISTINCT RECEIVEREMAIL FROM IM_EMAILRECEIVERDETAILS b JOIN IM_EMAILRECEIVER a ON a.ID=b.MID WHERE TASKID='" + taskid + "'";
+	var list2 = appBo.query(sql);
+	var toEmail = "";
+	if (list2 != null && list2.size() > 0) {
+		for (var maillist = 0; maillist < list2.size(); maillist++) {
+			var toEmailsub = list2.get(maillist).get("RECEIVEREMAIL");
+			if (toEmailsub != null && toEmailsub != "") {
+				toEmail = toEmail + toEmailsub + ",";
+			}
+		}
+	}
+	return toEmail;
+}
+endsnippet
+
+snippet poba.域动态定制 "模块域动态定制脚本样例"
+/**
+ * 模块域动态定制脚本样例
+ * @author yclimw
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/ 
+importClass(Packages.cn.com.chx.bo.AppBo);
+var appBo = new AppBo();
+
+var myDate = new Date();
+var ls = appBo.query("SELECT XQYF from VW_PO_PMC_CG");
+var xqyf;
+if (ls != null && ls.size() > 0) {
+	xqyf = Number(ls.get(0).get("XQYF"));
+}
+var fy = (xqyf - 1) % 12 + 1;
+var ly = xqyf % 12 + 1;
+var qy = (xqyf + 1) % 12 + 1;
+
+var tObj = util.getField("fy");
+tObj.setName(fy + "月");
+var tObj = util.getField("fyhf");
+tObj.setName(fy + "月回复");
+tObj = util.getField("ly");
+tObj.setName(ly + "月");
+tObj = util.getField("lyhf");
+tObj.setName(ly + "月回复");
+tObj = util.getField("qy");
+tObj.setName(qy + "月");
+tObj = util.getField("qyhf");
+tObj.setName(qy + "月回复");
+endsnippet
+
+snippet poba.发送邮件 "发送电子邮件"
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMailUtil); //邮件地址解析类
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMail);
+
+/**
+ * 以系统管理员的身份发送邮件
+ * @author yclimw
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/ 
+function sendMail(){
+	//邮箱IP
+	var emailserverip = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailserverip");
+	//邮箱地址
+	var emailaddress = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailaddress");
+	//邮箱密码
+	var postmasterpwd = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailpwd");
+	var emailcode = emailaddress.substring(0, emailaddress.indexOf("@"));
+	//邮件处理类
+	var mail = new SendMail(emailserverip);
+	var toEmail = getReceiverEmails("onlineorderinfo"); //正式使用
+	// var toEmail = getReceiverEmails("dssjywtzd"); //测试使用
+	var mailsubject = "抓取电商数据-自动生成业务通知单-" + Pub.GetToday();
+	var mailcontent = "抓取电商数据-自动生成业务通知单,抓取数据：" + total + "条，其中成功启动业务通知单流程：" + success + "条，启动异常：" + failure + "条。";
+	mail.setMail(emailserverip, mailsubject, mailcontent, toEmail, "", emailaddress, "", emailcode, postmasterpwd);
+}
+endsnippet
+
+snippet poba.附件位置 "获取OA系统配置的附件路径"
+importClass(Packages.cn.com.chx.eform.util.appUtil);
+var ${1:attachPath} = appUtil.getAttatchPath()
 endsnippet
