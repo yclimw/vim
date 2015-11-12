@@ -94,30 +94,22 @@
 " =============================================================================
 "                          << 以下为用户自定义配置 >>
 " =============================================================================
-
 	"  < Vundle 插件管理工具配置 >
 	" -----------------------------------------------------------------------------
 	" 用于更方便的管理vim插件，具体用法参考 :h vundle 帮助
-	" 安装方法为在终端输入如下命令
-	" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-	" 如果想在 windows 安装就必需先安装 "git for window"，可查阅网上资料
-
 	set nocompatible                                      "禁用 Vi 兼容模式
 	filetype off                                          "禁用文件类型侦测
 	au BufRead,BufNewFile *.go set filetype=go
 	if g:islinux
-		set rtp+=~/.vim/bundle/vundle/
-		call vundle#rc()
+        set rtp+=~/.vim/bundle/Vundle.vim
 	else
-		" set rtp+=$VIM/vimfiles/bundle/vundle/
-		set rtp+=~/.vim/bundle/vundle/
-		call vundle#rc('$VIM/vimfiles/bundle/')
+        set rtp+=$HOME/.vim/bundle/Vundle.vim
 	endif
-
-    if filereadable(expand("~/.vimrc.bundles"))
-      source ~/.vimrc.bundles
-    endif    
-
+    call vundle#begin()
+        if filereadable(expand("$HOME/.vim/.vimrc.bundles"))
+          source $HOME/.vim/.vimrc.bundles
+        endif    
+    call vundle#end()
 	filetype plugin indent on "required!
 	
 	"  < 编码配置 >

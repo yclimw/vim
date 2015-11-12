@@ -141,3 +141,67 @@ snippet poba.附件位置 "获取OA系统配置的附件路径"
 importClass(Packages.cn.com.chx.eform.util.appUtil);
 var ${1:attachPath} = appUtil.getAttatchPath()
 endsnippet
+
+snippet poba.数据表单删除 "带子表的数据表单删除代码"
+/**
+ * 自定义带子表的数据表单删除功能（OA系统自带的删除功能只能删除主表的记录，子表的记录无法删除）
+ * @author yclimw
+ * @param id 主表 ID
+ * date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/
+//删除ID对应的主表
+//遍历对应所有的子表，删除MID=ID的所有子表记录
+importClass(Packages.cn.com.chx.util.Pub);
+importClass(Packages.cn.com.chx.bo.AppBo);
+importClass(java.util.HashMap);
+importClass(Packages.cn.com.chx.util.DateTimeUtil); //获取时间格式，精确到毫秒：20140928113424030
+importClass(java.util.ArrayList);
+function delete(id){
+	var appBo = new AppBo();
+	var ret = request.getParameter("retvalue");
+	var errlists = "";
+	var falsenum = 0;
+	var successnum = 0;
+	var outtag="【表单】PO-送货单-删除：";
+	out.println(outtag+ret);
+	if (ret == null || ret.length == 0) {
+		runtime.setMessage("alert('请先选择送货单');\r\n");
+	} else {
+		var id = ret.split(";");
+		if (id.length > 0) {
+			for (var i = 0; i < id.length; i++) {
+				var billID = id[i]; //送货单主表ID
+				if (billID != null) {
+					var list = appBo.query("SELECT FLAG,ORDERNUM FROM PO_DM_DELIVERYORDER WHERE ID=" + billID);
+					if (list != null && list.size() > 0) {
+						var flag = list.get(0).get("FLAG");
+						var ordernum = list.get(0).get("ORDERNUM");
+						out.println(outtag+ordernum);
+						if (flag == "0" && isNotExistPublishedGoodsReceipt(ordernum)) { //送货单未发布且下游不存在已经发布的收货单
+							var sql = "DELETE FROM PO_DM_DELIVERYORDER WHERE ID=" + billID; //删除单据
+							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
+							appBo.runSQL(sql);
+							sql = "DELETE FROM PO_DM_DELIVERYORDER_SUB WHERE MID=" + billID;
+							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
+							appBo.runSQL(sql);
+							deleteGoodsReceipt(ordernum); //删除对应的收货单（如果有的话）
+							successnum++;
+						} else {
+							errlists = errlists + ordernum + " ";
+							falsenum++;
+						}
+					}
+				}
+			}
+		}
+		if (falsenum == 0) {
+			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条');\r\n");
+		} else {
+			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条\\n其中送货单：" + errlists + "为已发布状态，需要先回退再删除');\r\n");
+		}
+		runtime.setMessage("submitQuery('query');\r\n");
+	}
+	
+}
+
+endsnippet
