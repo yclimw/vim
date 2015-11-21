@@ -106,8 +106,8 @@
         set rtp+=$HOME/.vim/bundle/Vundle.vim
 	endif
     call vundle#begin()
-        if filereadable(expand("$HOME/.vim/.vimrc.bundles"))
-          source $HOME/.vim/.vimrc.bundles
+        if filereadable(expand("$HOME/.vim/vimrc.bundles"))
+          source $HOME/.vim/vimrc.bundles
         endif    
     call vundle#end()
 	filetype plugin indent on "required!
@@ -683,9 +683,27 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-let g:syntastic_javascript_checkers=['eslint']
-let g:syntastic_javascript_eslint_exec = 'eslint_d'
+" let g:syntastic_javascript_checkers=['eslint']
+" let g:syntastic_javascript_eslint_execlint= 'eslint_d'
+let g:syntastic_javascript_checkers=['gjslint']
 
 let g:syntastic_python_checkers=['pylint']
 let g:syntastic_python_pylint_args='--disable=C0111,R0903,C0301'
 "==================================================================================
+" for js
+autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+autocmd FileType javascript noremap <buffer>  <leader>ff :call JsBeautify()<cr>
+autocmd FileType javascript vnoremap <buffer> <leader>ff :call RangeJsBeautify()<cr>
+" for json 
+autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+" for jsx 
+autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+" for html
+autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+" for css or scss
+autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
