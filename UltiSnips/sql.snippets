@@ -1,0 +1,29 @@
+snippet 普巴新建数据库表
+-- ----------------------------
+-- Table structure for 表名
+-- ----------------------------
+DROP TABLE "NEWLAND"."表名";
+CREATE TABLE "NEWLAND"."表名" (
+"ID" NUMBER NOT NULL ,
+"RMK01" VARCHAR2(16 BYTE) NOT NULL ,
+"RMK02" VARCHAR2(64 BYTE) NULL ,
+"RMK03" VARCHAR2(8 BYTE) NULL ,
+"RMK04" VARCHAR2(32 BYTE) NULL ,
+"TA_RMK01" VARCHAR2(16 BYTE) NULL 
+)
+LOGGING
+NOCOMPRESS
+NOCACHE
+
+;
+COMMENT ON TABLE "NEWLAND"."表名" IS '维修单明细表 故障分类、原因、处理方式等编码表 add by limw 20151118';
+COMMENT ON COLUMN "NEWLAND"."表名"."RMK01" IS 'OA编号';
+COMMENT ON COLUMN "NEWLAND"."表名"."RMK02" IS '名称';
+COMMENT ON COLUMN "NEWLAND"."表名"."RMK03" IS '类别';
+COMMENT ON COLUMN "NEWLAND"."表名"."RMK04" IS '备注';
+COMMENT ON COLUMN "NEWLAND"."表名"."TA_RMK01" IS '银商编号';
+
+ALTER TABLE "NEWLAND"."表名" ADD CHECK ("ID" IS NOT NULL);
+
+ALTER TABLE "NEWLAND"."表名" ADD PRIMARY KEY ("ID");
+endsnippet
