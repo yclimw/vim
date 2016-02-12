@@ -329,6 +329,8 @@
 	" 有目录村结构的文件浏览插件
 	" 常规模式下输入 F1 调用插件
 	nmap <F1> :NERDTreeToggle<CR>
+    " 当打开 NERDTree 窗口时，自动显示 Bookmarks
+    let NERDTreeShowBookmarks=1
 
 	"  < omnicppcomplete 插件配置 >
 	" 用于C/C++代码补全，这种补全主要针对命名空间、类、结构、共同体等进行补全，详细
@@ -686,9 +688,11 @@ let g:syntastic_check_on_wq = 0
 " let g:syntastic_javascript_checkers=['eslint']
 " let g:syntastic_javascript_eslint_execlint= 'eslint_d'
 let g:syntastic_javascript_checkers=['gjslint']
+let g:syntastic_java_checkers=[]
 
-let g:syntastic_python_checkers=['pylint']
-let g:syntastic_python_pylint_args='--disable=C0111,R0903,C0301'
+"let g:syntastic_python_checkers=['pylint']
+let g:syntastic_python_checkers=[]
+" let g:syntastic_python_pylint_args='--disable=C0111,R0903,C0301'
 "==================================================================================
 " for js
 autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
