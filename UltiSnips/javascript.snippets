@@ -1,428 +1,427 @@
 snippet 普巴弹出模块子表赋值
-//判断该条记录在子表中是否已经存在
-runtime.setMessage("if (isNotExist('" + purchasenum + "','" + items + "')) {");
-//获取当前子表中现有记录的最大RowId再加1作为下一行的插入行号
-runtime.setMessage("var rowNum=Number(grd${1:subtablename}.getRowId(Number(grd${1:subtablename}.getRowsNum())-1))+1;\r\n");
-var rs = "grd${1:subtablename}.addRow(rowNum," + "'" + 
-		${2:param}+ "," + 
-		${3:param}+ "," + 
-		${4:param}+ "," + 
-		${5:param}+ "," + 
-		${6:param}+ "," + 
-		${7:param}+ "," + 
-		"',rowNum);\r\n";
-runtime.setMessage(rs);
-runtime.setMessage("grd${1:subtablename}.setFieldValue(rowNum,'${2:fieldName}','" + ${3:fieldValue}+ "');\r\n");
-runtime.setMessage('}\r\n');
-endsnippet
+//判断该条记录在子表中是否已经存在
+runtime.setMessage("if (isNotExist('" + purchasenum + "','" + items + "')) {");
+//获取当前子表中现有记录的最大RowId再加1作为下一行的插入行号
+runtime.setMessage("var rowNum=Number(grd${1:subtablename}.getRowId(Number(grd${1:subtablename}.getRowsNum())-1))+1;\r\n");
+var rs = "grd${1:subtablename}.addRow(rowNum," + "'" + 
+		${2:param}+ "," + 
+		${3:param}+ "," + 
+		${4:param}+ "," + 
+		${5:param}+ "," + 
+		${6:param}+ "," + 
+		${7:param}+ "," + 
+		"',rowNum);\r\n";
+runtime.setMessage(rs);
+runtime.setMessage("grd${1:subtablename}.setFieldValue(rowNum,'${2:fieldName}','" + ${3:fieldValue}+ "');\r\n");
+runtime.setMessage('}\r\n');
+endsnippet
 
-snippet 普巴输出日志
-out.println("${1:info}");
-endsnippet
+snippet 普巴输出日志
+out.println("${1:info}");
+endsnippet
 
-snippet 普巴系统邮件签名
-/**
-	* 系统邮件签名信息
-	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
-	* @author yclimw
-*/
-function getAdminMailSign() {
-	var sign = "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;此邮件为业务架构平台系统自动发送，请勿回复。<br />-----------------------------------<br />福建新大陆支付技术有限公司 供应商协同平台";
-	return sign;
-}
-endsnippet
+snippet 普巴系统邮件签名
+/**
+	* 系统邮件签名信息
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+	* @author yclimw
+*/
+function getAdminMailSign() {
+	var sign = "<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;此邮件为业务架构平台系统自动发送，请勿回复。<br />-----------------------------------<br />福建新大陆支付技术有限公司 供应商协同平台";
+	return sign;
+}
+endsnippet
 
-snippet 普巴通过角色号获取收件人地址
-/**
-	* 通过角色号获取该角色下所有用户的邮件地址
-	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
-	* @author yclimw
-	* @param 角色编号
-	* @return String 收件人邮件列表，数据格式：邮件1,邮件2,……
-*/
-function getMailReceiversByRole(roleCode) {
-	var login = new Login();
-	var mailReceivers = "";
-	var users = OuClient.getUsersByRole("root", roleCode); //根据角色号获取角色下所有人员信息
-	if (users != null && users.length > 0) {
-		for (var i = 0; i < users.length; i++) {
-			var usercode = users[i].getCode();
-			var list = appBo.query("SELECT EMAIL FROM OU_USER WHERE CODE='" + usercode + "'");
-			if (list != null && list.size() > 0) {
-				var email = list.get(0).get("EMAIL");
-				if (email != null && email != "") {
-					mailReceivers = mailReceivers + email + ",";
-				}
-			}
-		}
-	}
-	return mailReceivers;
-}
-endsnippet
+snippet 普巴通过角色号获取收件人地址
+/**
+	* 通过角色号获取该角色下所有用户的邮件地址
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+	* @author yclimw
+	* @param 角色编号
+	* @return String 收件人邮件列表，数据格式：邮件1,邮件2,……
+*/
+function getMailReceiversByRole(roleCode) {
+	var login = new Login();
+	var mailReceivers = "";
+	var users = OuClient.getUsersByRole("root", roleCode); //根据角色号获取角色下所有人员信息
+	if (users != null && users.length > 0) {
+		for (var i = 0; i < users.length; i++) {
+			var usercode = users[i].getCode();
+			var list = appBo.query("SELECT EMAIL FROM OU_USER WHERE CODE='" + usercode + "'");
+			if (list != null && list.size() > 0) {
+				var email = list.get(0).get("EMAIL");
+				if (email != null && email != "") {
+					mailReceivers = mailReceivers + email + ",";
+				}
+			}
+		}
+	}
+	return mailReceivers;
+}
+endsnippet
 
-snippet 普巴通过任务编号获取收件人地址
-/*
-	* 通过任务编号获取收件人列表
-	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
-	* @author yclimw
-	* @param taskid OA配置表里面配置的任务编号
-	* @return String 收件人邮件列表，数据格式：邮件1,邮件2,邮件3，……
-*/
-function getReceiverEmails(taskid) {
-	var sql = "SELECT DISTINCT RECEIVEREMAIL FROM IM_EMAILRECEIVERDETAILS b JOIN IM_EMAILRECEIVER a ON a.ID=b.MID WHERE TASKID='" + taskid + "'";
-	var list2 = appBo.query(sql);
-	var toEmail = "";
-	if (list2 != null && list2.size() > 0) {
-		for (var maillist = 0; maillist < list2.size(); maillist++) {
-			var toEmailsub = list2.get(maillist).get("RECEIVEREMAIL");
-			if (toEmailsub != null && toEmailsub != "") {
-				toEmail = toEmail + toEmailsub + ",";
-			}
-		}
-	}
-	return toEmail;
-}
-endsnippet
+snippet 普巴通过任务编号获取收件人地址
+/*
+	* 通过任务编号获取收件人列表
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+	* @author yclimw
+	* @param taskid OA配置表里面配置的任务编号
+	* @return String 收件人邮件列表，数据格式：邮件1,邮件2,邮件3，……
+*/
+function getReceiverEmails(taskid) {
+	var sql = "SELECT DISTINCT RECEIVEREMAIL FROM IM_EMAILRECEIVERDETAILS b JOIN IM_EMAILRECEIVER a ON a.ID=b.MID WHERE TASKID='" + taskid + "'";
+	var list2 = appBo.query(sql);
+	var toEmail = "";
+	if (list2 != null && list2.size() > 0) {
+		for (var maillist = 0; maillist < list2.size(); maillist++) {
+			var toEmailsub = list2.get(maillist).get("RECEIVEREMAIL");
+			if (toEmailsub != null && toEmailsub != "") {
+				toEmail = toEmail + toEmailsub + ",";
+			}
+		}
+	}
+	return toEmail;
+}
+endsnippet
 
-snippet 普巴域动态定制
-/**
-	* 模块域动态定制脚本样例
-	* @author yclimw
-	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
-*/ 
-importClass(Packages.cn.com.chx.bo.AppBo);
-var appBo = new AppBo();
+snippet 普巴域动态定制
+/**
+	* 模块域动态定制脚本样例
+	* @author yclimw
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/ 
+importClass(Packages.cn.com.chx.bo.AppBo);
+var appBo = new AppBo();
 
-var myDate = new Date();
-var ls = appBo.query("SELECT XQYF from VW_PO_PMC_CG");
-var xqyf;
-if (ls != null && ls.size() > 0) {
-	xqyf = Number(ls.get(0).get("XQYF"));
-}
-var fy = (xqyf - 1) % 12 + 1;
-var ly = xqyf % 12 + 1;
-var qy = (xqyf + 1) % 12 + 1;
+var myDate = new Date();
+var ls = appBo.query("SELECT XQYF from VW_PO_PMC_CG");
+var xqyf;
+if (ls != null && ls.size() > 0) {
+	xqyf = Number(ls.get(0).get("XQYF"));
+}
+var fy = (xqyf - 1) % 12 + 1;
+var ly = xqyf % 12 + 1;
+var qy = (xqyf + 1) % 12 + 1;
 
-var tObj = util.getField("fy");
-tObj.setName(fy + "月");
-var tObj = util.getField("fyhf");
-tObj.setName(fy + "月回复");
-tObj = util.getField("ly");
-tObj.setName(ly + "月");
-tObj = util.getField("lyhf");
-tObj.setName(ly + "月回复");
-tObj = util.getField("qy");
-tObj.setName(qy + "月");
-tObj = util.getField("qyhf");
-tObj.setName(qy + "月回复");
-endsnippet
+var tObj = util.getField("fy");
+tObj.setName(fy + "月");
+var tObj = util.getField("fyhf");
+tObj.setName(fy + "月回复");
+tObj = util.getField("ly");
+tObj.setName(ly + "月");
+tObj = util.getField("lyhf");
+tObj.setName(ly + "月回复");
+tObj = util.getField("qy");
+tObj.setName(qy + "月");
+tObj = util.getField("qyhf");
+tObj.setName(qy + "月回复");
+endsnippet
 
-snippet 普巴附件位置
-importClass(Packages.cn.com.chx.eform.util.appUtil);
-var ${1:attachPath} = appUtil.getAttatchPath()
-endsnippet
+snippet 普巴附件位置
+importClass(Packages.cn.com.chx.eform.util.appUtil);
+var ${1:attachPath} = appUtil.getAttatchPath()
+endsnippet
 
-snippet 普巴数据表单删除
-/**
-	* 自定义带子表的数据表单删除功能（OA系统自带的删除功能只能删除主表的记录，子表的记录无法删除）
-	* @author yclimw
-	* @param id 主表 ID
-	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
-*/
-//删除ID对应的主表
-//遍历对应所有的子表，删除MID=ID的所有子表记录
-importClass(Packages.cn.com.chx.util.Pub);
-importClass(Packages.cn.com.chx.bo.AppBo);
-importClass(java.util.HashMap);
-importClass(Packages.cn.com.chx.util.DateTimeUtil); //获取时间格式，精确到毫秒：20140928113424030
-importClass(java.util.ArrayList);
-function delete(id){
-	var appBo = new AppBo();
-	var ret = request.getParameter("retvalue");
-	var errlists = "";
-	var falsenum = 0;
-	var successnum = 0;
-	var outtag="【表单】PO-送货单-删除：";
-	out.println(outtag+ret);
-	if (ret == null || ret.length == 0) {
-		runtime.setMessage("alert('请先选择送货单');\r\n");
-	} else {
-		var id = ret.split(";");
-		if (id.length > 0) {
-			for (var i = 0; i < id.length; i++) {
-				var billID = id[i]; //送货单主表ID
-				if (billID != null) {
-					var list = appBo.query("SELECT FLAG,ORDERNUM FROM PO_DM_DELIVERYORDER WHERE ID=" + billID);
-					if (list != null && list.size() > 0) {
-						var flag = list.get(0).get("FLAG");
-						var ordernum = list.get(0).get("ORDERNUM");
-						out.println(outtag+ordernum);
-						if (flag == "0" && isNotExistPublishedGoodsReceipt(ordernum)) { //送货单未发布且下游不存在已经发布的收货单
-							var sql = "DELETE FROM PO_DM_DELIVERYORDER WHERE ID=" + billID; //删除单据
-							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
-							appBo.runSQL(sql);
-							sql = "DELETE FROM PO_DM_DELIVERYORDER_SUB WHERE MID=" + billID;
-							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
-							appBo.runSQL(sql);
-							deleteGoodsReceipt(ordernum); //删除对应的收货单（如果有的话）
-							successnum++;
-						} else {
-							errlists = errlists + ordernum + " ";
-							falsenum++;
-						}
-					}
-				}
-			}
-		}
-		if (falsenum == 0) {
-			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条');\r\n");
-		} else {
-			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条\\n其中送货单：" + errlists + "为已发布状态，需要先回退再删除');\r\n");
-		}
-		runtime.setMessage("submitQuery('query');\r\n");
-	}
-	
-}
+snippet 普巴数据表单删除
+/**
+	* 自定义带子表的数据表单删除功能（OA系统自带的删除功能只能删除主表的记录，子表的记录无法删除）
+	* @author yclimw
+	* @param id 主表 ID
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/
+//删除ID对应的主表
+//遍历对应所有的子表，删除MID=ID的所有子表记录
+importClass(Packages.cn.com.chx.util.Pub);
+importClass(Packages.cn.com.chx.bo.AppBo);
+importClass(java.util.HashMap);
+importClass(Packages.cn.com.chx.util.DateTimeUtil); //获取时间格式，精确到毫秒：20140928113424030
+importClass(java.util.ArrayList);
+function delete(id){
+	var appBo = new AppBo();
+	var ret = request.getParameter("retvalue");
+	var errlists = "";
+	var falsenum = 0;
+	var successnum = 0;
+	var outtag="【表单】PO-送货单-删除：";
+	out.println(outtag+ret);
+	if (ret == null || ret.length == 0) {
+		runtime.setMessage("alert('请先选择送货单');\r\n");
+	} else {
+		var id = ret.split(";");
+		if (id.length > 0) {
+			for (var i = 0; i < id.length; i++) {
+				var billID = id[i]; //送货单主表ID
+				if (billID != null) {
+					var list = appBo.query("SELECT FLAG,ORDERNUM FROM PO_DM_DELIVERYORDER WHERE ID=" + billID);
+					if (list != null && list.size() > 0) {
+						var flag = list.get(0).get("FLAG");
+						var ordernum = list.get(0).get("ORDERNUM");
+						out.println(outtag+ordernum);
+						if (flag == "0" && isNotExistPublishedGoodsReceipt(ordernum)) { //送货单未发布且下游不存在已经发布的收货单
+							var sql = "DELETE FROM PO_DM_DELIVERYORDER WHERE ID=" + billID; //删除单据
+							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
+							appBo.runSQL(sql);
+							sql = "DELETE FROM PO_DM_DELIVERYORDER_SUB WHERE MID=" + billID;
+							out.println(outtag+":"+login.id+":"+ordernum+":"+sql);
+							appBo.runSQL(sql);
+							deleteGoodsReceipt(ordernum); //删除对应的收货单（如果有的话）
+							successnum++;
+						} else {
+							errlists = errlists + ordernum + " ";
+							falsenum++;
+						}
+					}
+				}
+			}
+		}
+		if (falsenum == 0) {
+			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条');\r\n");
+		} else {
+			runtime.setMessage("alert('操作完成。成功" + successnum + "条；失败" + falsenum + "条\\n其中送货单：" + errlists + "为已发布状态，需要先回退再删除');\r\n");
+		}
+		runtime.setMessage("submitQuery('query');\r\n");
+	}
+	
+}
 
-endsnippet
+endsnippet
 
-snippet 普巴流程表单弹出模块操作脚本
-var selString = request.getParameter("retvalue");//得到选择的返回值 
-var str=selString.replaceAll(";","','");
-var ls=appBo.query("SELECT * FROM VW_TOPGP_IMA_VIEW  WHERE PHID in('"+str+"')");
-if(ls != null && ls.size() > 0){
-	for(var i=0;i<ls.size();i++){		
-		var ph=ls.get(i).get("PH"); //品号
-		var pm=ls.get(i).get("PM"); //品名
-		var gg=ls.get(i).get('GG'); //规格
-		var unit=ls.get(i).get('KCDW'); //单位
-	}
-}
+snippet 普巴流程表单弹出模块操作脚本
+var selString = request.getParameter("retvalue");//得到选择的返回值 
+var str=selString.replaceAll(";","','");
+var ls=appBo.query("SELECT * FROM VW_TOPGP_IMA_VIEW  WHERE PHID in('"+str+"')");
+if(ls != null && ls.size() > 0){
+	for(var i=0;i<ls.size();i++){		
+		var ph=ls.get(i).get("PH"); //品号
+		var pm=ls.get(i).get("PM"); //品名
+		var gg=ls.get(i).get('GG'); //规格
+		var unit=ls.get(i).get('KCDW'); //单位
+	}
+}
 
-endsnippet
+endsnippet
 
-snippet 普巴流程表单后台脚本操作子表
-importClass(java.util.HashMap);
-importClass(java.util.ArrayList);
+snippet 普巴流程表单后台脚本操作子表
+importClass(java.util.HashMap);
+importClass(java.util.ArrayList);
 
-var subtableid = '${1:fieldid}'; //子表域号
-//取子表对象 ArrayList
-var subtable = util.getTableValue(subtableid);
-var sublist = new ArrayList();
-if(subtable != null && subtable.size() > 0) {
-	for(var i = 0;i < subtable.size();i++) {
-		//do somethine...
-		var map = subtable.get(i); //HashMap
-		var amount = map.get('AMOUNT');
-		map.put('returnedamount' , '0');
-		map.put('unreturnamount' , amount);
-		sublist.add(map);
-	}
-}
-//runtime.setRun(false);
-//runtime.setMessage("错误信息：XXXXXXXXXXX");
-//runtime.setCause("原因：XXXXXXXXXXXXX");
-//修改子表的域值
-util.setTableValue(subtableid,sublist);
-endsnippet
+var subtableid = '${1:fieldid}'; //子表域号
+//取子表对象 ArrayList
+var subtable = util.getTableValue(subtableid);
+var sublist = new ArrayList();
+if(subtable != null && subtable.size() > 0) {
+	for(var i = 0;i < subtable.size();i++) {
+		//do somethine...
+		var map = subtable.get(i); //HashMap
+		var amount = map.get('AMOUNT');
+		map.put('returnedamount' , '0');
+		map.put('unreturnamount' , amount);
+		sublist.add(map);
+	}
+}
+//runtime.setRun(false);
+//runtime.setMessage("错误信息：XXXXXXXXXXX");
+//runtime.setCause("原因：XXXXXXXXXXXXX");
+//修改子表的域值
+util.setTableValue(subtableid,sublist);
+endsnippet
 
-snippet 普巴选择用户操作后台脚本
-var selString = request.getParameter('retvalue'); //得到选择的返回值 
-var str = selString.split('\2');
+snippet 普巴选择用户操作后台脚本
+var selString = request.getParameter('retvalue'); //得到选择的返回值 
+var str = selString.split('\2');
 
-// runtime.setMessage('grdjjsqdsub.clearAll(false);\r\n');
-var ls = appBo.query("SELECT b.CODE AS JJRCODE,b.USERNAME,c.CODE,c.DEPARTNAME FROM OU_USER b LEFT JOIN OU_DEPARTMENT c ON b.DEPARTCODE=c.CODE WHERE b.CODE ='" + str[0] + "'");
+// runtime.setMessage('grdjjsqdsub.clearAll(false);\r\n');
+var ls = appBo.query("SELECT b.CODE AS JJRCODE,b.USERNAME,c.CODE,c.DEPARTNAME FROM OU_USER b LEFT JOIN OU_DEPARTMENT c ON b.DEPARTCODE=c.CODE WHERE b.CODE ='" + str[0] + "'");
 
-if (ls != null && ls.size() > 0) {
-	var applicant = ls.get(0).get('USERNAME');
-	var applicantnum = ls.get(0).get('JJRCODE');
-	var deptname = ls.get(0).get('DEPARTNAME');
-	var deptnum = ls.get(0).get('CODE');
+if (ls != null && ls.size() > 0) {
+	var applicant = ls.get(0).get('USERNAME');
+	var applicantnum = ls.get(0).get('JJRCODE');
+	var deptname = ls.get(0).get('DEPARTNAME');
+	var deptnum = ls.get(0).get('CODE');
 
-	runtime.setMessage("document.forms[0].applicant.value='" + applicant + "';\r\n");
-	runtime.setMessage("document.forms[0].applicantnum.value='" + applicantnum + "';\r\n");
-	runtime.setMessage("document.forms[0].deptname.value='" + deptname + "';\r\n");
-	runtime.setMessage("document.forms[0].deptnum.value='" + deptnum + "';\r\n");
-}
-endsnippet
+	runtime.setMessage("document.forms[0].applicant.value='" + applicant + "';\r\n");
+	runtime.setMessage("document.forms[0].applicantnum.value='" + applicantnum + "';\r\n");
+	runtime.setMessage("document.forms[0].deptname.value='" + deptname + "';\r\n");
+	runtime.setMessage("document.forms[0].deptnum.value='" + deptnum + "';\r\n");
+}
+endsnippet
 
-snippet 普巴流程表单生成日期流水单据编号
-importClass(Packages.java.lang.Integer);
-importClass(Packages.cn.com.chx.util.Pub);
+snippet 普巴流程表单生成日期流水单据编号
+importClass(Packages.java.lang.Integer);
+importClass(Packages.cn.com.chx.util.Pub);
 
-var obj = new Pub();
-var dates = obj.GetToday();
-var datess = dates.split('-');
-var d = datess[0] + datess[1] + datess[2];
-var id = appBo.getNextKey('', '${1:tablename}.id');
-var ss = Integer.toString(id);
-var len = ss.length();
-switch (len) {
-case 1:
-	ss = '000' + ss;
-	break;
-case 2:
-	ss = '00' + ss;
-	break;
-case 3:
-	ss = '0' + ss;
-	break;
-default:
-	ss = ss.substring(len - 4, len);
-}
-var c = d + ss;
-util.setFieldValue('ordernum', c);
+var obj = new Pub();
+var dates = obj.GetToday();
+var datess = dates.split('-');
+var d = datess[0] + datess[1] + datess[2];
+var id = appBo.getNextKey('', '${1:tablename}.id');
+var ss = Integer.toString(id);
+var len = ss.length();
+switch (len) {
+case 1:
+	ss = '000' + ss;
+	break;
+case 2:
+	ss = '00' + ss;
+	break;
+case 3:
+	ss = '0' + ss;
+	break;
+default:
+	ss = ss.substring(len - 4, len);
+}
+var c = d + ss;
+util.setFieldValue('ordernum', c);
 
-endsnippet
+endsnippet
 
-snippet 普巴发送邮件流程模板
-importClass(Packages.cn.com.chx.oa.plugs.mail.SendMailUtil); //邮件地址解析类
-importClass(Packages.com.xoes.eflow.SendMail);importClass(Packages.cn.com.chx.bo.AppBo);
-importClass(Packages.cn.com.chx.util.Pub);
-importClass(java.util.HashMap);
-importClass(Packages.cn.com.chx.frame.FrameData);
-importClass(Packages.cn.com.chx.eform.model.FormDataModel);
-importClass(Packages.cn.com.chx.workflow.core.Work);
+snippet 普巴发送邮件流程模板
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMailUtil); //邮件地址解析类
+importClass(Packages.com.xoes.eflow.SendMail);importClass(Packages.cn.com.chx.bo.AppBo);
+importClass(Packages.cn.com.chx.util.Pub);
+importClass(java.util.HashMap);
+importClass(Packages.cn.com.chx.frame.FrameData);
+importClass(Packages.cn.com.chx.eform.model.FormDataModel);
+importClass(Packages.cn.com.chx.workflow.core.Work);
 
-var obj = new FormDataModel();
-var nid = work.getNid();
-obj.loadFormDataByNid(nid);
-var appBo = workflow.dbo;
+var obj = new FormDataModel();
+var nid = work.getNid();
+obj.loadFormDataByNid(nid);
+var appBo = workflow.dbo;
 
-/**
- * 以系统管理员的身份发送邮件
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
-*/
-function sendMailNotify() {
-    var serverip = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailserverip');
-    var from = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailaddress');
-    var passwd = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailpwd');
-    var emailcode = from.substring(0, from.indexOf('@'));
-    var toEmail = getReceivers();
-    var mailsubject = getMailSubject();
-    var mailcontent = getMailContent();
-    SendMail.setMail(serverip, mailsubject, mailcontent, toEmail, '', from, '', emailcode, passwd);
-}
+/**
+ * 以系统管理员的身份发送邮件
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/
+function sendMailNotify() {
+    var serverip = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailserverip');
+    var from = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailaddress');
+    var passwd = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailpwd');
+    var emailcode = from.substring(0, from.indexOf('@'));
+    var toEmail = getReceivers();
+    var mailsubject = getMailSubject();
+    var mailcontent = getMailContent();
+    SendMail.setMail(serverip, mailsubject, mailcontent, toEmail, '', from, '', emailcode, passwd);
+}
 
-/**
- * 获取收件人地址列表：在这里配置收件人
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @return {String} 返回收件人地址，多个地址中间用逗号隔开
- */
-function getReceivers() {
-    var userCode = obj.getFieldValue('sqrgh'); //申请人工号
-    if (userCode == null) userCode = '';
-    var list = appBo.query('SELECT USER_EMAIL FROM HR_USER_BASEINFO ' +
-            "WHERE USER_SNO='" + userCode + "'");
-    if (list != null && list.size() > 0) {
-        return list.get(0);
-    }
-    else {
-        return '';
-    }
-}
+/**
+ * 获取收件人地址列表：在这里配置收件人
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @return {String} 返回收件人地址，多个地址中间用逗号隔开
+ */
+function getReceivers() {
+    var userCode = obj.getFieldValue('sqrgh'); //申请人工号
+    if (userCode == null) userCode = '';
+    var list = appBo.query('SELECT USER_EMAIL FROM HR_USER_BASEINFO ' +
+            "WHERE USER_SNO='" + userCode + "'");
+    if (list != null && list.size() > 0) {
+        return list.get(0);
+    }
+    else {
+        return '';
+    }
+}
 
-/**
- * 获取邮件标题：在这里配置邮件标题
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @return {String} 邮件标题
- */
-function getMailSubject() {
-    var tasktitle = obj.getFieldValue('tasktitle'); //任务名称
-    var subject = '技术支持单：' + tasktitle + ' 已经审批结束';
-    return subject;
-}
+/**
+ * 获取邮件标题：在这里配置邮件标题
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @return {String} 邮件标题
+ */
+function getMailSubject() {
+    var tasktitle = obj.getFieldValue('tasktitle'); //任务名称
+    var subject = '技术支持单：' + tasktitle + ' 已经审批结束';
+    return subject;
+}
 
-/**
- * 获取邮件正文内容：在这里配置邮件正文
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @return {String} 邮件正文内容
- */
-function getMailContent() {
-    var content = '';
-    content = content + getAdminMailSign();
-    return content;
-}
+/**
+ * 获取邮件正文内容：在这里配置邮件正文
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @return {String} 邮件正文内容
+ */
+function getMailContent() {
+    var content = '';
+    content = content + getAdminMailSign();
+    return content;
+}
 
-/**
- * 系统邮件签名信息
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @return {String} 系统邮件签名信息
-*/
-function getAdminMailSign() {
-    var sign = '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
-        '此邮件为业务架构平台系统自动发送，请勿回复。' +
-        '<br />-----------------------------------<br />' +
-        '福建新大陆支付技术有限公司 业务架构平台';
-    return sign;
-}
+/**
+ * 系统邮件签名信息
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @return {String} 系统邮件签名信息
+*/
+function getAdminMailSign() {
+    var sign = '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
+        '此邮件为业务架构平台系统自动发送，请勿回复。' +
+        '<br />-----------------------------------<br />' +
+        '福建新大陆支付技术有限公司 业务架构平台';
+    return sign;
+}
 
-/**
- * 通过角色号获取该角色下所有用户的邮件地址
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @param {String} roleCode OA系统中配置的角色编号
- * @return {String} 收件人邮件列表，数据格式：邮件1,邮件2,……
-*/
-function getMailReceiversByRole(roleCode) {
-    var login = new Login();
-    var mailReceivers = '';
-    var users = OuClient.getUsersByRole('root', roleCode); //根据角色号获取角色下所有人员信息
-    if (users != null && users.length > 0) {
-        for (var i = 0; i < users.length; i++) {
-            var usercode = users[i].getCode();
-            var list = appBo.query('SELECT EMAIL FROM OU_USER ' +
-                    "WHERE CODE='" + usercode + "'");
-            if (list != null && list.size() > 0) {
-                var email = list.get(0).get('EMAIL');
-                if (email != null && email != '') {
-                    mailReceivers = mailReceivers + email + ',';
-                }
-            }
-        }
-    }
-    return mailReceivers;
-}
+/**
+ * 通过角色号获取该角色下所有用户的邮件地址
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @param {String} roleCode OA系统中配置的角色编号
+ * @return {String} 收件人邮件列表，数据格式：邮件1,邮件2,……
+*/
+function getMailReceiversByRole(roleCode) {
+    var login = new Login();
+    var mailReceivers = '';
+    var users = OuClient.getUsersByRole('root', roleCode); //根据角色号获取角色下所有人员信息
+    if (users != null && users.length > 0) {
+        for (var i = 0; i < users.length; i++) {
+            var usercode = users[i].getCode();
+            var list = appBo.query('SELECT EMAIL FROM OU_USER ' +
+                    "WHERE CODE='" + usercode + "'");
+            if (list != null && list.size() > 0) {
+                var email = list.get(0).get('EMAIL');
+                if (email != null && email != '') {
+                    mailReceivers = mailReceivers + email + ',';
+                }
+            }
+        }
+    }
+    return mailReceivers;
+}
 
-/*
-    * 通过任务编号获取收件人列表
-    * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
-    * @param taskid OA-【系统管理】-【流程管理】-【收件人配置】表里面配置的任务编号
-    * @return String 收件人邮件列表，数据格式：邮件1,邮件2,邮件3，……
-*/
-function getMailReceiversByTaskId(taskid) {
-    var sql = 'SELECT DISTINCT RECEIVEREMAIL ' +
-            'FROM IM_EMAILRECEIVERDETAILS b ' +
-            'JOIN IM_EMAILRECEIVER a ON a.ID=b.MID ' +
-            "WHERE TASKID='" + taskid + "'";
-    var list = appBo.query(sql);
-    var toEmail = '';
-    if (list != null && list2.size() > 0) {
-        for (var maillist = 0; maillist < list2.size(); maillist++) {
-            var toEmailsub = list2.get(maillist).get('RECEIVEREMAIL');
-            if (toEmailsub != null && toEmailsub != '') {
-                toEmail = toEmail + toEmailsub + ',';
-            }
-        }
-    }
-    return toEmail;
-}
-endsnippet
+/*
+    * 通过任务编号获取收件人列表
+    * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+    * @param taskid OA-【系统管理】-【流程管理】-【收件人配置】表里面配置的任务编号
+    * @return String 收件人邮件列表，数据格式：邮件1,邮件2,邮件3，……
+*/
+function getMailReceiversByTaskId(taskid) {
+    var sql = 'SELECT DISTINCT RECEIVEREMAIL ' +
+            'FROM IM_EMAILRECEIVERDETAILS b ' +
+            'JOIN IM_EMAILRECEIVER a ON a.ID=b.MID ' +
+            "WHERE TASKID='" + taskid + "'";
+    var list = appBo.query(sql);
+    var toEmail = '';
+    if (list != null && list2.size() > 0) {
+        for (var maillist = 0; maillist < list2.size(); maillist++) {
+            var toEmailsub = list2.get(maillist).get('RECEIVEREMAIL');
+            if (toEmailsub != null && toEmailsub != '') {
+                toEmail = toEmail + toEmailsub + ',';
+            }
+        }
+    }
+    return toEmail;
+}
+endsnippet
 
-snippet 普巴获取品号信息
-/**
- * 通过品号获取产品信息
- * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
- * @param {String} materialsNum 品号
- * @return {HashMap} 品号信息
- */
-function getMaterial(materialsNum){
-    var list=appBo.query("SELECT * FROM VW_TOPGP_TOA_IMA_VIEW WHERE IMA01='"+materialsNum+"'");
-    if(list!=null && list.size()>0){
-        return list.get(0);
-    }
-    else{
-        return null;
-    }
-}
-endsnippet
-
+snippet 普巴获取品号信息
+/**
+ * 通过品号获取产品信息
+ * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
+ * @param {String} materialsNum 品号
+ * @return {HashMap} 品号信息
+ */
+function getMaterial(materialsNum){
+    var list=appBo.query("SELECT * FROM VW_TOPGP_TOA_IMA_VIEW WHERE IMA01='"+materialsNum+"'");
+    if(list!=null && list.size()>0){
+        return list.get(0);
+    }
+    else{
+        return null;
+    }
+}
+endsnippet
