@@ -422,6 +422,47 @@ function getMaterial(materialsNum){
     }
     else{
         return null;
+	}
+}
+endsnippet
+
+snippet 同步到易拓ERP
+importClass(java.util.HashMap);
+importClass(Packages.cn.com.chx.util.DateTimeUtil);
+importClass(Packages.cn.com.chx.bo.AppBo);
+importClass(Packages.cn.com.chx.util.Pub);
+importClass(Packages.cn.com.ou.util.TopProdAppBo);
+importClass(Packages.cn.com.newland.erp.ERPClient);
+
+function syncDataToTiptop(parameters)
+{
+    var ERROR = '1';
+    var toputil = new TopProdAppBo();
+    var taskNO = DateTimeUtil.getFormatDateTime(new Date(), "yyyyMMddHHmmssSSS");
+
+    var orderNum = parameters.get('ordernum');
+
+    /************1、1 添加开票单数据(tc_rvv_file)**********/
+    toputil.addRvwFile(taskNO, pmm01, pmm25);
+    /************2、添加任务表记录**********/
+    var taskType = "C10";
+    var flowid = "nlpo_am_checkbilling"; //获取当前流程号
+    var addTime = Pub.GetNow(); //添加时间
+    var userid = login.id; //添加用户
+    var comp = "NLPM01"; //归属公司
+    toputil.addTaskFile(taskNO, taskType, flowid, addTime, userid, comp);
+    /************3、调用TOPGP webservice接口，通知ERP处理**********/
+    var ierp = new ERPClient();
+    var resmessage = ierp.payoa(taskNO);
+    var isOK;
+    if (resmessage != null && resmessage != "null")
+    {
+        isOK = resmessage.substring(0, 1);
     }
+    else
+    {
+        isOK = ERROR;
+    }
+    appBo.runSQL("update PO_AM_BILLING set TOERPSTATUS='" + isOK + "' WHERE ORDERNUM = '" + orderNum + "'");
 }
 endsnippet

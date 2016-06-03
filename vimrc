@@ -106,9 +106,49 @@
         set rtp+=$HOME/.vim/bundle/Vundle.vim
 	endif
     call vundle#begin()
-        if filereadable(expand("$HOME/.vim/vimrc.bundles"))
-          source $HOME/.vim/vimrc.bundles
-        endif    
+        " 使用Vundle来管理Vundle，这个必须要有。
+        Plugin 'VundleVim/Vundle.vim'
+
+        " 以下为要安装或更新的插件，不同仓库都有（具体书写规范请参考帮助）
+        Plugin 'a.vim'
+        Plugin 'Align'
+        Plugin 'jiangmiao/auto-pairs'
+        Plugin 'bufexplorer.zip'
+        Plugin 'ccvext.vim'
+        Plugin 'cSyntaxAfter'
+        Plugin 'Yggdroot/indentLine'
+        Plugin 'javacomplete'
+        Plugin 'The-NERD-Commenter'
+        Plugin 'Shougo/neocomplcache.vim'
+        Plugin 'scrooloose/nerdcommenter'
+        Plugin 'scrooloose/nerdtree'
+        Plugin 'OmniCppComplete'
+        Plugin 'Lokaltog/vim-powerline'
+        Plugin 'repeat.vim'
+        Plugin 'wesleyche/SrcExpl'
+        Plugin 'std_c.zip'
+        Plugin 'SuperTab'
+        Plugin 'tpope/vim-surround'
+        Plugin 'scrooloose/syntastic'
+        Plugin 'majutsushi/tagbar'
+        Plugin 'taglist.vim'
+        Plugin 'TxtBrowser'
+        Plugin 'ZoomWin'
+        Plugin 'Gundo'
+        Plugin 'einars/js-beautify'
+        Plugin 'maksimr/vim-jsbeautify'
+        Plugin 'AuthorInfo'
+        Plugin 'UltiSnips'
+        Plugin 'honza/vim-snippets' "代码快集合
+        " Plugin 'msanders/snipmate.vim'
+        Plugin 'rizzatti/dash.vim'
+        Plugin 'toyamarinyon/vim-swift'
+        Plugin 'Valloric/YouCompleteMe'
+        "Plugin 'vim-javacompleteex'               "更好的 Java 补全插件
+        "Plugin 'Mark--Karkat'
+        " Plugin 'ervandew/supertab'                "有时与 snipmate 插件冲突
+        " Plugin 'fholgado/minibufexpl.vim'         "好像与 Vundle 插件有一些冲突
+        " Plugin 'instant-markdown.vim'
     call vundle#end()
 	filetype plugin indent on "required!
 	
@@ -685,9 +725,9 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-" let g:syntastic_javascript_checkers=['eslint']
-" let g:syntastic_javascript_eslint_execlint= 'eslint_d'
-let g:syntastic_javascript_checkers=['gjslint']
+let g:syntastic_javascript_checkers=['eslint']
+let g:syntastic_javascript_eslint_execlint= 'eslint_d'
+" let g:syntastic_javascript_checkers=['gjslint']
 let g:syntastic_java_checkers=[]
 
 "let g:syntastic_python_checkers=['pylint']
@@ -711,3 +751,27 @@ autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
 " for css or scss
 autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
 autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+
+" ===========================编译并运行文件====================
+func! CompileAndRunFile()
+    if &filetype == 'c'
+        exec "!gcc -std=c99 % -o  %<"
+        exec "! ./%<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -o %<"
+        exec "! ./%<"
+    elseif &filetype == 'java' 
+        exec "!javac %" 
+            exec "!java %<"
+    elseif &filetype == 'sh'
+        :!chmod u+x %; ./%
+    elseif &filetype == 'python'
+        exec "!python %"
+    elseif expand("%:e") == "swift"
+            exec "!swift %" 
+    elseif expand("%") == 'Makefile' || expand("%") == 'makefile'
+        exec "!make"
+    endif
+endfunc
+
+map <F5> :call CompileAndRunFile()<CR>
