@@ -110,43 +110,28 @@
         Plugin 'VundleVim/Vundle.vim'
 
         " 以下为要安装或更新的插件，不同仓库都有（具体书写规范请参考帮助）
-        Plugin 'a.vim'
-        Plugin 'Align'
         Plugin 'jiangmiao/auto-pairs'
         Plugin 'bufexplorer.zip'
-        Plugin 'ccvext.vim'
         Plugin 'cSyntaxAfter'
-        Plugin 'Yggdroot/indentLine'
-        Plugin 'javacomplete'
-        Plugin 'The-NERD-Commenter'
         Plugin 'Shougo/neocomplcache.vim'
         Plugin 'scrooloose/nerdcommenter'
         Plugin 'scrooloose/nerdtree'
-        Plugin 'OmniCppComplete'
-        Plugin 'Lokaltog/vim-powerline'
-        Plugin 'repeat.vim'
-        Plugin 'wesleyche/SrcExpl'
-        Plugin 'std_c.zip'
-        Plugin 'SuperTab'
-        Plugin 'tpope/vim-surround'
-        Plugin 'scrooloose/syntastic'
-        Plugin 'majutsushi/tagbar'
+        Plugin 'Lokaltog/vim-powerline' " 状态栏插件，更好的状态栏效果
+        Plugin 'tpope/vim-repeat'
+        Plugin 'tpope/vim-surround' " 快速给单词/句子两边增加符号（包括html标签）,详细帮助见 :h surround.txt
+        Plugin 'scrooloose/syntastic' " 用于保存文件时查检语法
         Plugin 'taglist.vim'
-        Plugin 'TxtBrowser'
-        Plugin 'ZoomWin'
+        Plugin 'majutsushi/tagbar'
         Plugin 'Gundo'
         Plugin 'einars/js-beautify'
         Plugin 'maksimr/vim-jsbeautify'
-        Plugin 'AuthorInfo'
-        Plugin 'UltiSnips'
+        Plugin 'SirVer/ultisnips'
         Plugin 'honza/vim-snippets' "代码快集合
-        " Plugin 'msanders/snipmate.vim'
         Plugin 'rizzatti/dash.vim'
         Plugin 'toyamarinyon/vim-swift'
         Plugin 'Valloric/YouCompleteMe'
-        "Plugin 'vim-javacompleteex'               "更好的 Java 补全插件
         "Plugin 'Mark--Karkat'
-        " Plugin 'ervandew/supertab'                "有时与 snipmate 插件冲突
+        Plugin 'ervandew/supertab'                "有时与 snipmate 插件冲突
         " Plugin 'fholgado/minibufexpl.vim'         "好像与 Vundle 插件有一些冲突
         " Plugin 'instant-markdown.vim'
     call vundle#end()
@@ -281,15 +266,6 @@
 " =============================================================================
 "                          << 以下为常用插件配置 >>
 " =============================================================================
-	"  < a.vim 插件配置 >
-		" 用于切换C/C++头文件
-		" :A     ---切换头文件并独占整个窗口
-		" :AV    ---切换头文件并垂直分割窗口
-		" :AS    ---切换头文件并水平分割窗口
-
-	"  < Align 插件配置 >
-	" 一个对齐的插件，用来——排版与对齐代码，功能强大，不过用到的机会不多
-
 	"  < auto-pairs 插件配置 >
 	" 用于括号与引号自动补全，不过会与函数原型提示插件echofunc冲突
 	" 所以我就没有加入echofunc插件
@@ -300,32 +276,9 @@
 		" <Leader>bs 水平分割窗口显示缓存列表，并在缓存列表窗口中打开选定文件
 		" <Leader>bv 垂直分割窗口显示缓存列表，并在缓存列表窗口中打开选定文件
 
-	"  < ccvext.vim 插件配置 >
-		" 用于对指定文件自动生成tags与cscope文件并连接
-		" 如果是Windows系统, 则生成的文件在源文件所在盘符根目录的.symbs目录下(如: X:\.symbs\)
-		" 如果是Linux系统, 则生成的文件在~/.symbs/目录下
-		" 具体用法可参考www.vim.org中此插件的说明
-		" <Leader>sy 自动生成tags与cscope文件并连接
-		" <Leader>sc 连接已存在的tags与cscope文件
-
 	"  < cSyntaxAfter 插件配置 >
 		" 高亮括号与运算符等
 		au! BufRead,BufNewFile,BufEnter *.{c,cpp,h,java,javascript} call CSyntaxAfter()
-
-	"  < indentLine 插件配置 >
-		" 用于显示对齐线，与 indent_guides 在显示方式上不同，根据自己喜好选择了
-		" 在终端上会有屏幕刷新的问题，这个问题能解决有更好了
-		" 开启/关闭对齐线
-		nmap <leader>il :IndentLinesToggle<CR>
-		" 设置Gvim的对齐线样式
-		if g:isGUI
-			let g:indentLine_char = "┊"
-			let g:indentLine_first_char = "┊"
-		endif
-		" 设置终端对齐线颜色，如果不喜欢可以将其注释掉采用默认颜色
-		let g:indentLine_color_term = 239
-		" 设置 GUI 对齐线颜色，如果不喜欢可以将其注释掉采用默认颜色
-		" let g:indentLine_color_gui = '#A4E57E'
 
 	"  < Mark--Karkat（也就是 Mark） 插件配置 >
 	" 给不同的单词高亮，表明不同的变量时很有用，详细帮助见 :h mark.txt
@@ -372,81 +325,16 @@
     " 当打开 NERDTree 窗口时，自动显示 Bookmarks
     let NERDTreeShowBookmarks=1
 
-	"  < omnicppcomplete 插件配置 >
-	" 用于C/C++代码补全，这种补全主要针对命名空间、类、结构、共同体等进行补全，详细
-	" 说明可以参考帮助或网络教程等
-	" 使用前先执行如下 ctags 命令（本配置中可以直接使用 ccvext 插件来执行以下命令）
-	" ctags -R --c++-kinds=+p --fields=+iaS --extra=+q
-	" 我使用上面的参数生成标签后，对函数使用跳转时会出现多个选择
-	" 所以我就将--c++-kinds=+p参数给去掉了，如果大侠有什么其它解决方法希望不要保留呀
-	set completeopt=menu                        "关闭预览窗口
-
-	"  < powerline 插件配置 >
-	" 状态栏插件，更好的状态栏效果
-
-	"  < repeat 插件配置 >
-	" 主要用"."命令来重复上次插件使用的命令
-
-	"  < snipMate 插件配置 >
-	" 用于各种代码补全，这种补全是一种对代码中的词与代码块的缩写补全，详细用法可以参
-	" 考使用说明或网络教程等。不过有时候也会与 supertab 插件在补全时产生冲突，如果大
-	" 侠有什么其它解决方法希望不要保留呀
-
-	"  < SrcExpl 插件配置 >
-	" 增强源代码浏览，其功能就像Windows中的"Source Insight"
-	" 查看源码的声明
-	nmap <F3> :SrcExplToggle<CR>                "打开/闭浏览窗口
-
-	" "  < supertab 插件配置 >
-	" " 我主要用于配合 omnicppcomplete 插件，在按 Tab 键时自动补全效果更好更快
-	" " let g:supertabdefaultcompletiontype = "<c-x><c-u>"
-
-	"  < std_c 插件配置 >
-	" 用于增强C语法高亮
-	" 启用 // 注视风格
-	let c_cpp_comments = 0
-
-	"  < surround 插件配置 >
-	" 快速给单词/句子两边增加符号（包括html标签），缺点是不能用"."来重复命令
-	" 不过 repeat 插件可以解决这个问题，详细帮助见 :h surround.txt
-
-	"  < Syntastic 插件配置 >
-	" 用于保存文件时查检语法
-
-	"  < Tagbar 插件配置 >
-	" 相对 TagList 能更好的支持面向对象
-
-	" 常规模式下输入 tb 调用插件，如果有打开 TagList 窗口则先将其关闭
-	nmap tb :TlistClose<CR>:TagbarToggle<CR>
-
-	let g:tagbar_width=30                       "设置窗口宽度
-	" let g:tagbar_left=1                         "在左侧窗口中显示
-
 	"  < TagList 插件配置 >
 	" 高效地浏览源码, 其功能就像vc中的workpace
 	" 那里面列出了当前文件中的所有宏,全局变量, 函数名等
-
-	" 常规模式下输入 tl 调用插件，如果有打开 Tagbar 窗口则先将其关闭
-	nmap tl :TagbarClose<CR>:Tlist<CR>
-
 	let Tlist_Show_One_File=1                   "只显示当前文件的tags
-	" let Tlist_Enable_Fold_Column=0              "使taglist插件不显示左边的折叠行
+	let Tlist_Enable_Fold_Column=0              "使taglist插件不显示左边的折叠行
 	let Tlist_Exit_OnlyWindow=1                 "如果Taglist窗口是最后一个窗口则退出Vim
 	let Tlist_File_Fold_Auto_Close=1            "自动折叠
 	let Tlist_WinWidth=30                       "设置窗口宽度
 	let Tlist_Use_Right_Window=1                "在右侧窗口中显示
 
-	"  < txtbrowser 插件配置 >
-	" 用于文本文件生成标签与与语法高亮（调用TagList插件生成标签，如果可以）
-	au BufRead,BufNewFile *.txt setlocal ft=txt
-
-	"  < ZoomWin 插件配置 >
-	" 用于分割窗口的最大化与还原
-	" 常规模式下按快捷键 <c-w>o 在最大化与还原间切换
-
-	" < Gundo 插件配置 >
-	"To Toggle the Gundo Windows
-	nmap <silent><F12> :GundoToggle<CR>
 
 
 
@@ -589,6 +477,7 @@ map! <S-Insert> <MiddleMouse>
 
 	"变量、函数、类、方法预览
 		nnoremap <silent> <F2> :TlistToggle<CR>
+		nnoremap <silent> <F3> :TagbarToggle<CR>
 		"nnoremap <silent> <F4> :TlistOpen<CR>
 		"nnoremap <silent> <F12> :edit $16dig<CR>
 
@@ -701,17 +590,13 @@ map! <S-Insert> <MiddleMouse>
 		endfunction
 inoremap jk <ESC>
 
-"====================AuthorInfo插件配置====================
-"====================进行版权声明的设置====================
-"添加或更新头
-let g:vimrc_author='yclimw'
-let g:vimrc_email='limw@newlandpayment.com'
-" let g:vimrc_homepage='www.yclimw.com'
-
-nmap <F8> :AuthorInfoDetect<cr>
 "================================================================================
 nmap <silent> <F9> :Dash<cr>
 nmap <silent> <F10> :Dash!<cr>
+
+" < Gundo 插件配置 >
+"To Toggle the Gundo Windows
+nmap <silent><F12> :GundoToggle<CR>
 
 let g:solarized_italic=0
 
@@ -775,3 +660,11 @@ func! CompileAndRunFile()
 endfunc
 
 map <F5> :call CompileAndRunFile()<CR>
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" " If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
