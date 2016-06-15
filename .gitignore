@@ -1,3 +1,4 @@
-bundle/*
-undo/*
-backup/*
+/bundle
+/undo
+/backup
+/tags/

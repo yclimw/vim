@@ -103,7 +103,7 @@
 	if g:islinux
         set rtp+=~/.vim/bundle/Vundle.vim
 	else
-        set rtp+=$HOME/.vim/bundle/Vundle.vim
+        set rtp+=~/.vim/bundle/Vundle.vim
 	endif
     call vundle#begin()
         " 使用Vundle来管理Vundle，这个必须要有。
@@ -125,15 +125,13 @@
         Plugin 'Gundo'
         Plugin 'einars/js-beautify'
         Plugin 'maksimr/vim-jsbeautify'
-        Plugin 'SirVer/ultisnips'
+        " Plugin 'editorconfig/editorconfig-vim'
+        "Plugin 'SirVer/ultisnips'
         Plugin 'honza/vim-snippets' "代码快集合
         Plugin 'rizzatti/dash.vim'
         Plugin 'toyamarinyon/vim-swift'
-        Plugin 'Valloric/YouCompleteMe'
-        "Plugin 'Mark--Karkat'
+        "Plugin 'Valloric/YouCompleteMe'
         Plugin 'ervandew/supertab'                "有时与 snipmate 插件冲突
-        " Plugin 'fholgado/minibufexpl.vim'         "好像与 Vundle 插件有一些冲突
-        " Plugin 'instant-markdown.vim'
     call vundle#end()
 	filetype plugin indent on "required!
 	
@@ -220,13 +218,13 @@
 		set cmdheight=2                                       "设置命令行的高度为2，默认为1
 		set cursorline                                        "突出显示当前行
 		set guifont=Hack\ Regular
-		set guifontwide=YaHei_Consolas_Hybrid:h10                 "设置字体:字号（字体名称空格用下划线代替）
+		" set guifontwide=YaHei_Consolas_Hybrid:h10                 "设置字体:字号（字体名称空格用下划线代替）
 		"set nowrap                                            "设置不自动换行
 		"set shortmess=atI                                     "去掉欢迎界面
 		set statusline=%n:%{HasPaste()}%F%m%r%h\ %w\ \(%l\,%c\)\ ascii:%b\ hex:%B\ %P   "设置状态栏信息
 		" 设置 gVim 窗口初始位置及大小
 		if g:isGUI
-			" au GUIEnter * simalt ~x                           "窗口启动时自动最大化
+            au GUIEnter * simalt ~x                           "窗口启动时自动最大化
 			" winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
 			" set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
 			" 设置代码配色方案
@@ -620,22 +618,20 @@ let g:syntastic_python_checkers=[]
 " let g:syntastic_python_pylint_args='--disable=C0111,R0903,C0301'
 "==================================================================================
 " for js
-autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
-autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
-autocmd FileType javascript noremap <buffer>  <leader>ff :call JsBeautify()<cr>
-autocmd FileType javascript vnoremap <buffer> <leader>ff :call RangeJsBeautify()<cr>
+autocmd FileType javascript noremap <buffer>  <Leader>ff :call JsBeautify()<cr>
+autocmd FileType javascript vnoremap <buffer> <Leader>ff :call RangeJsBeautify()<cr>
 " for json 
-autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
-autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+autocmd FileType json noremap <buffer> <Leader>ff :call JsonBeautify()<cr>
+autocmd FileType json vnoremap <buffer> <Leader>ff :call RangeJsonBeautify()<cr>
 " for jsx 
-autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
-autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+autocmd FileType jsx noremap <buffer> <Leader>ff :call JsxBeautify()<cr>
+autocmd FileType jsx vnoremap <buffer> <Leader>ff :call RangeJsxBeautify()<cr>
 " for html
-autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+autocmd FileType html noremap <buffer> <Leader>ff :call HtmlBeautify()<cr>
+autocmd FileType html vnoremap <buffer> <Leader>ff :call RangeHtmlBeautify()<cr>
 " for css or scss
-autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
-autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+autocmd FileType css noremap <buffer> <Leader>ff :call CSSBeautify()<cr>
+autocmd FileType css vnoremap <buffer> <Leader>ff :call RangeCSSBeautify()<cr>
 
 " ===========================编译并运行文件====================
 func! CompileAndRunFile()
@@ -668,3 +664,12 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+"===========================================================
+set undofile
+set undodir=$HOME/.vim/undo
+"maximum number of changes that can be undone
+set undolevels=1000
+
+set backupext=.bak
+set backupdir=$HOME/.vim/backup
+set writebackup                             "保存文件前建立备份，保存成功后删除该备份

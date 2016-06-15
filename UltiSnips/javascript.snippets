@@ -117,6 +117,33 @@ tObj = util.getField("qyhf");
 tObj.setName(qy + "月回复");
 endsnippet
 
+snippet 普巴发送邮件
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMailUtil); //邮件地址解析类
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMail);
+
+/**
+	* 以系统管理员的身份发送邮件
+	* @author yclimw
+	* date: `!v strftime("%Y-%m-%d %H:%M:%S")`
+*/ 
+function sendMail(){
+	//邮箱IP
+	var emailserverip = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailserverip");
+	//邮箱地址
+	var emailaddress = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailaddress");
+	//邮箱密码
+	var postmasterpwd = FrameData.getInstance().getConfigItem("im-dictionary", "emailconfig", "emailpwd");
+	var emailcode = emailaddress.substring(0, emailaddress.indexOf("@"));
+	//邮件处理类
+	var mail = new SendMail(emailserverip);
+	var toEmail = getReceiverEmails("onlineorderinfo"); //正式使用
+	// var toEmail = getReceiverEmails("dssjywtzd"); //测试使用
+	var mailsubject = "抓取电商数据-自动生成业务通知单-" + Pub.GetToday();
+	var mailcontent = "抓取电商数据-自动生成业务通知单,抓取数据：" + total + "条，其中成功启动业务通知单流程：" + success + "条，启动异常：" + failure + "条。";
+	mail.setMail(emailserverip, mailsubject, mailcontent, toEmail, "", emailaddress, "", emailcode, postmasterpwd);
+}
+endsnippet
+
 snippet 普巴附件位置
 importClass(Packages.cn.com.chx.eform.util.appUtil);
 var ${1:attachPath} = appUtil.getAttatchPath()
@@ -277,7 +304,8 @@ endsnippet
 
 snippet 普巴发送邮件流程模板
 importClass(Packages.cn.com.chx.oa.plugs.mail.SendMailUtil); //邮件地址解析类
-importClass(Packages.com.xoes.eflow.SendMail);importClass(Packages.cn.com.chx.bo.AppBo);
+importClass(Packages.cn.com.chx.oa.plugs.mail.SendMail);
+importClass(Packages.cn.com.chx.bo.AppBo);
 importClass(Packages.cn.com.chx.util.Pub);
 importClass(java.util.HashMap);
 importClass(Packages.cn.com.chx.frame.FrameData);
@@ -293,15 +321,21 @@ var appBo = workflow.dbo;
  * 以系统管理员的身份发送邮件
  * @author yclimw `!v strftime("%Y-%m-%d %H:%M:%S")`
 */
-function sendMailNotify() {
-    var serverip = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailserverip');
-    var from = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailaddress');
-    var passwd = FrameData.getInstance().getConfigItem('im-dictionary', 'emailconfig', 'emailpwd');
+function sendMail() {
+    var frameDataInstance = FrameData.getInstance();
+    //邮箱IP
+    var serverip = frameDataInstance.getConfigItem('im-dictionary', 'emailconfig', 'emailserverip');
+    //邮箱地址
+    var from = frameDataInstance.getConfigItem('im-dictionary', 'emailconfig', 'emailaddress');
+    //邮箱密码
+    var passwd = frameDataInstance.getConfigItem('im-dictionary', 'emailconfig', 'emailpwd');
     var emailcode = from.substring(0, from.indexOf('@'));
+    //邮件处理类
+    var mail = new SendMail(serverip);
     var toEmail = getReceivers();
     var mailsubject = getMailSubject();
     var mailcontent = getMailContent();
-    SendMail.setMail(serverip, mailsubject, mailcontent, toEmail, '', from, '', emailcode, passwd);
+    mail.setMail(serverip, mailsubject, mailcontent, toEmail, '', from, '', emailcode, passwd);
 }
 
 /**
@@ -422,7 +456,7 @@ function getMaterial(materialsNum){
     }
     else{
         return null;
-	}
+    }
 }
 endsnippet
 
@@ -466,3 +500,19 @@ function syncDataToTiptop(parameters)
     appBo.runSQL("update PO_AM_BILLING set TOERPSTATUS='" + isOK + "' WHERE ORDERNUM = '" + orderNum + "'");
 }
 endsnippet
+
+snippet 判断子表字段是否已经存在
+function isNotExist(subtablename, colName, compareValue) {
+    var tab = 'grd' + subtablename;
+    eval('var n = ' + tab + '.getRowsNum();');
+    for (var i = 0; i < n; i++) {
+        eval('var rowid = ' + tab + '.getRowId(' + i + ');');
+        eval('var value = ' + tab + ".getFieldValue('" + rowid + "','" + colName + "')");
+        if (value == compareValue) {
+            return false;
+        }
+    }
+    return true;
+}
+endsnippet
+
